@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.gavmacdonald_weatherapp.viewmodel.WeatherViewModel
+import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 @Composable
-fun CurrentWeatherScreen(viewModel: WeatherViewModel) {
+fun CurrentWeatherScreen(viewModel: MainViewModel) {
     val current = viewModel.currentWeather
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column(modifier = Modifier.padding(16.dp)) {
         Image(painterResource(current.weatherImg), contentDescription = null)
         Text("Conditions: ${current.condition}")
         Text("Temperature: ${current.temp}")

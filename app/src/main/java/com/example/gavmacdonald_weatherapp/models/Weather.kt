@@ -1,5 +1,4 @@
 package com.example.gavmacdonald_weatherapp.models
-// TODO: Add weather icons to resource files
 data class CurrentWeather(
     val weatherImg: Int,
     val condition: String,

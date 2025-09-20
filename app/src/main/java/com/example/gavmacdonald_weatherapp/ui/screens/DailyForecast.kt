@@ -12,16 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.gavmacdonald_weatherapp.viewmodel.WeatherViewModel
+import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 @Composable
-fun DailyForecastScreen(viewModel: WeatherViewModel) {
+fun DailyForecastScreen(viewModel: MainViewModel) {
     LazyColumn(modifier = Modifier.padding(8.dp)) {
         items(viewModel.dailyForecasts) { forecast ->
             Card(modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)) {
-                Column(Modifier.padding(8.dp)) {
+                .padding(16.dp)) {
+                Column(Modifier.padding(16.dp)) {
                     Image(painter = painterResource(forecast.weatherImg), contentDescription = null)
                     Text("Date: ${forecast.date}")
                     Text("Conditions: ${forecast.condition}")

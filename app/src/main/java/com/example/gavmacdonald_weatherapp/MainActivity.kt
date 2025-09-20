@@ -3,55 +3,73 @@ package com.example.gavmacdonald_weatherapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.gavmacdonald_weatherapp.ui.screens.CurrentWeatherScreen
 import com.example.gavmacdonald_weatherapp.ui.screens.DailyForecastScreen
-import com.example.gavmacdonald_weatherapp.ui.theme.GavMacDonaldWeatherAppTheme
-import com.example.gavmacdonald_weatherapp.viewmodel.WeatherViewModel
+import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
-    private val weatherViewModel: WeatherViewModel by viewModels()
-
+    private lateinit var mainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
-            GavMacDonaldWeatherAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ){
-                    WeatherApp(weatherViewModel)
-                }
-            }
+                DisplayUI(mainViewModel)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherApp(viewModel: WeatherViewModel) {
-    var currentScreen by remember { mutableStateOf("current") }
-// Navigation between screens
-    Column(modifier = Modifier.fillMaxSize()) {
-        Row {
-            Button(onClick = { currentScreen = "current" }) { Text("Current") }
-            Button(onClick = { currentScreen = "forecast"}) { Text("Forecast") }
+fun DisplayUI(viewModel: MainViewModel) {
+    val navController = rememberNavController()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Halifax, Nova Scotia") }
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Current Weather") },
+                    label = { Text("Current") },
+                    selected = (navController.currentDestination?.route == "current"),
+                    onClick = { navController.navigate("current") }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.DateRange, contentDescription = "Forecast") },
+                    label = { Text("Forecast") },
+                    selected = (navController.currentDestination?.route == "forecast"),
+                    onClick = { navController.navigate("forecast") }
+                )
+            }
         }
-        when (currentScreen) {
-            "current" -> CurrentWeatherScreen(viewModel)
-            "forecast" -> DailyForecastScreen(viewModel)
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "current",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("current") { CurrentWeatherScreen(viewModel) }
+            composable("forecast") { DailyForecastScreen(viewModel) }
         }
     }
 }
