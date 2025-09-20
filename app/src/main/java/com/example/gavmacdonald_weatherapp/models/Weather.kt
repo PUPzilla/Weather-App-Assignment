@@ -1,26 +1,24 @@
 package com.example.gavmacdonald_weatherapp.models
+// TODO: Add weather icons to resource files
+data class CurrentWeather(
+    val weatherImg: Int,
+    val condition: String,
+    val temp: Double,
+    val precip: String,
+    var windDir: String,
+    var windSpeed: Double
+)
 
-class Weather {
-    var weatherImage = null
-    var condition = null
-    var temperature = null
-    var precipitation = null
-    var windDir = null
-    var windSpeed = null
-}
-
-class Forecast {
-    val date = null
-    var weatherImg = null
-    var tempHigh = null
-    var tempLow = null
-    var conditions = null
-    var precipitation = null
-    var windDir = null
-    var windSpeed = null
-    var humidity = null
-}
-
-fun ThreeDayForecast() {
-    var forecast = arrayOf(Forecast())
-}
+data class DailyForecast(
+    val weatherImg: Int,
+    val date: String,
+    val condition: String,
+    val highTemp: Double,
+    val lowTemp: Double,
+    val precipType: String,
+    val precipAmount: Double,
+    val precipChance: Int,
+    val windDir: String,
+    val windSpeed: Double,
+    val humidity: Int
+)
