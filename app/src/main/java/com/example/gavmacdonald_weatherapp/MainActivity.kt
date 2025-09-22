@@ -1,5 +1,6 @@
 package com.example.gavmacdonald_weatherapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -65,11 +67,18 @@ fun DisplayUI(viewModel: MainViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "current",
+            startDestination = "forecast",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("current") { CurrentWeatherScreen(viewModel) }
             composable("forecast") { DailyForecastScreen(viewModel) }
         }
     }
+}
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview
+@Composable
+fun PreviewUI(){
+    DisplayUI(MainViewModel())
 }
