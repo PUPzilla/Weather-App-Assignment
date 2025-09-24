@@ -67,7 +67,7 @@ fun DisplayUI(viewModel: MainViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "forecast",
+            startDestination = "current",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("current") { CurrentWeatherScreen(viewModel) }
