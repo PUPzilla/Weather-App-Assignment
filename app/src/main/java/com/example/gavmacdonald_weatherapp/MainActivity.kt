@@ -4,12 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -17,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -51,13 +49,13 @@ fun DisplayUI(viewModel: MainViewModel) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Current Weather") },
+                    icon = { Image(painterResource(R.drawable.rounded_home_24), contentDescription = "Current Weather")},
                     label = { Text("Current") },
                     selected = (navController.currentDestination?.route == "current"),
                     onClick = { navController.navigate("current") }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.DateRange, contentDescription = "Forecast") },
+                    icon = { Image(painterResource(R.drawable.rounded_calendar_today_24), contentDescription = "Daily Forecast")},
                     label = { Text("Forecast") },
                     selected = (navController.currentDestination?.route == "forecast"),
                     onClick = { navController.navigate("forecast") }
