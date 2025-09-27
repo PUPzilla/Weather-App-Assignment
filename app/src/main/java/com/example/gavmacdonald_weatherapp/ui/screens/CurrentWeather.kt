@@ -27,7 +27,6 @@ import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 @Composable
 fun CurrentWeatherScreen(viewModel: MainViewModel) {
-
     val txtPadding = Modifier.padding(16.dp)
     val textStyle = TextStyle(
         fontSize = 24.sp,
@@ -59,10 +58,14 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
             Row {
                 CompositionLocalProvider(LocalTextStyle provides textStyle) {
                     Column {
-                        Text("Conditions: ${current.condition}", modifier = txtPadding)
-                        Text("Temperature: ${current.temp}", modifier = txtPadding)
-                        Text("Precipitation: ${current.precip}", modifier = txtPadding)
-                        Text("Wind: ${current.windDir} ${current.windSpeed}km/h", modifier = txtPadding)
+                        Text("Conditions: ${current.condition}",
+                            modifier = txtPadding)
+                        Text("Temperature: ${current.temp}",
+                            modifier = txtPadding)
+                        Text("Precipitation: ${current.precip}",
+                            modifier = txtPadding)
+                        Text("Wind: ${current.windDir} ${current.windSpeed}km/h",
+                            modifier = txtPadding)
                     }
                 }
             }

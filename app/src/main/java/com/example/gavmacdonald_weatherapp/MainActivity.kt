@@ -49,13 +49,15 @@ fun DisplayUI(viewModel: MainViewModel) {
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    icon = { Image(painterResource(R.drawable.rounded_home_24), contentDescription = "Current Weather")},
+                    icon = { Image(painterResource(R.drawable.rounded_home_24),
+                        contentDescription = "Current Weather")},
                     label = { Text("Current") },
                     selected = (navController.currentDestination?.route == "current"),
                     onClick = { navController.navigate("current") }
                 )
                 NavigationBarItem(
-                    icon = { Image(painterResource(R.drawable.rounded_calendar_today_24), contentDescription = "Daily Forecast")},
+                    icon = { Image(painterResource(R.drawable.rounded_calendar_today_24),
+                        contentDescription = "Daily Forecast")},
                     label = { Text("Forecast") },
                     selected = (navController.currentDestination?.route == "forecast"),
                     onClick = { navController.navigate("forecast") }
