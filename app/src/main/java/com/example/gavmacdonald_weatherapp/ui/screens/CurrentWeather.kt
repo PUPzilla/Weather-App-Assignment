@@ -1,7 +1,6 @@
 package com.example.gavmacdonald_weatherapp.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +51,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.Top
             ) {
-                Image(painterResource(id = loadIcon(current.conditionId) ),
+                Icon(painterResource(id = loadIcon(current.conditionId) ),
                     contentDescription = null,
                     Modifier.size(100.dp))
             }

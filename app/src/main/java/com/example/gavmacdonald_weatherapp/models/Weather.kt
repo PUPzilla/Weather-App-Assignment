@@ -27,13 +27,13 @@ data class DailyForecast(
 
 // Array of drawable resource IDs
 private val conditionIcons = mapOf(
-    1 to R.drawable.rounded_sunny_24,
-    2 to R.drawable.rounded_cloud_24,
-    3 to R.drawable.rounded_rainy_24,
-    4 to R.drawable.rounded_rainy_heavy_24,
-    5 to R.drawable.rounded_foggy_24,
-    6 to R.drawable.rounded_thunderstorm_24,
-    7 to R.drawable.rounded_weather_snowy_24,
+    1 to R.drawable.rounded_sunny_24,           // 1 Sunny
+    2 to R.drawable.rounded_cloud_24,           // 2 Cloudy
+    3 to R.drawable.rounded_rainy_24,           // 3 Rain
+    4 to R.drawable.rounded_rainy_heavy_24,     // 4 Heavy Rain
+    5 to R.drawable.rounded_foggy_24,           // 5 Fog
+    6 to R.drawable.rounded_thunderstorm_24,    // 6 Thunder
+    7 to R.drawable.rounded_weather_snowy_24,   // 7 Snow
 )
 
 fun loadIcon(conditionId: Int): Int {

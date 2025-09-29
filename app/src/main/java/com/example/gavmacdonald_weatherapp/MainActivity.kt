@@ -4,14 +4,16 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,21 +45,29 @@ fun DisplayUI(viewModel: MainViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Halifax, Nova Scotia") }
-            )
+                title = { Text("Halifax, Nova Scotia") },
+                colors =
+                    TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primaryContainer)
+                )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor =
+                    MaterialTheme.colorScheme.primaryContainer
+            ) {
                 NavigationBarItem(
-                    icon = { Image(painterResource(R.drawable.rounded_home_24),
-                        contentDescription = "Current Weather")},
+                    icon = {
+                        Icon(painterResource(R.drawable.rounded_home_24),
+                            contentDescription = "Current Weather Icon")},
                     label = { Text("Current") },
                     selected = (navController.currentDestination?.route == "current"),
                     onClick = { navController.navigate("current") }
                 )
                 NavigationBarItem(
-                    icon = { Image(painterResource(R.drawable.rounded_calendar_today_24),
-                        contentDescription = "Daily Forecast")},
+                    icon = {
+                        Icon(painterResource(R.drawable.rounded_calendar_today_24),
+                            contentDescription = "Daily Forecast Icon")
+                    },
                     label = { Text("Forecast") },
                     selected = (navController.currentDestination?.route == "forecast"),
                     onClick = { navController.navigate("forecast") }
