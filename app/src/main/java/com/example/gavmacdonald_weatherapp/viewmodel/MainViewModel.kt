@@ -5,6 +5,8 @@ import com.example.gavmacdonald_weatherapp.models.CurrentWeather
 import com.example.gavmacdonald_weatherapp.models.DailyForecast
 
 class MainViewModel : ViewModel() {
+    // Placeholder data for current weather and forecasts.
+    // Will be replaced with API calls later.
     var currentWeather: CurrentWeather = CurrentWeather(
         conditionId = 1,
         condition = "Sunny",

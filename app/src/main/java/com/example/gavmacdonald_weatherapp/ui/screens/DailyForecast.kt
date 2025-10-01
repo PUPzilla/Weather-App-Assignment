@@ -2,7 +2,7 @@ package com.example.gavmacdonald_weatherapp.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,28 +29,30 @@ fun DailyForecastScreen(viewModel: MainViewModel) {
     val txtPadding = Modifier.padding(8.dp)
     val textStyle = TextStyle(
         fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold
-    )
+        fontWeight = FontWeight.SemiBold)
 
-    LazyColumn(modifier = Modifier.padding(8.dp)) {
-        items(viewModel.dailyForecasts) { forecast ->
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-            ) {
-                Column(
-                    Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        painter = painterResource(loadIcon(forecast.conditionId)),
-                        contentDescription = null,
-                        Modifier.size(100.dp)
+    CompositionLocalProvider(LocalTextStyle provides textStyle) {
+        LazyColumn(modifier = Modifier.padding(8.dp)) {
+            items(viewModel.dailyForecasts) { forecast ->
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = androidx.compose.material3.CardDefaults.cardColors(
+                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer
                     )
-                }
-                CompositionLocalProvider(LocalTextStyle provides textStyle) {
+                ) {
+                    Column(
+                        Modifier
+                            .padding(16.dp)
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(loadIcon(forecast.conditionId)),
+                            contentDescription = null,
+                            Modifier.size(100.dp)
+                        )
+                    }
                     Column(
                         Modifier.padding(16.dp)
                     ) {

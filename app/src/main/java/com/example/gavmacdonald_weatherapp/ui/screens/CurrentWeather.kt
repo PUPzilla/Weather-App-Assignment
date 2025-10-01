@@ -33,40 +33,45 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         fontWeight = FontWeight.Bold
     )
     val current = viewModel.currentWeather
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
+
+    CompositionLocalProvider(LocalTextStyle provides textStyle) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .fillMaxSize()
+                .padding(8.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Top
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
             ) {
-                Icon(painterResource(id = loadIcon(current.conditionId) ),
-                    contentDescription = null,
-                    Modifier.size(100.dp))
-            }
-            Row {
-                CompositionLocalProvider(LocalTextStyle provides textStyle) {
-                    Column {
-                        Text("Conditions: ${current.condition}",
-                            modifier = txtPadding)
-                        Text("Temperature: ${current.temp}",
-                            modifier = txtPadding)
-                        Text("Precipitation: ${current.precip}",
-                            modifier = txtPadding)
-                        Text("Wind: ${current.windDir} ${current.windSpeed}km/h",
-                            modifier = txtPadding)
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Icon(
+                        painterResource(id = loadIcon(current.conditionId)),
+                        contentDescription = null,
+                        Modifier
+                            .size(150.dp)
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Text("Conditions: ${current.condition}",
+                        modifier = txtPadding)
+                    Text("Temperature: ${current.temp}",
+                        modifier = txtPadding)
+                    Text("Precipitation: ${current.precip}",
+                        modifier = txtPadding)
+                    Text("Wind: ${current.windDir} ${current.windSpeed}km/h",
+                        modifier = txtPadding)
                 }
             }
         }
