@@ -251,7 +251,9 @@ data class ColorFamily(
 enum class ThemeMode {
     System,
     Light,
-    Dark
+    Dark,
+    HighContrastLight,
+    HighContrastDark
 }
 
 @Composable
@@ -262,19 +264,21 @@ fun GavMacDonaldWeatherAppTheme(
     content: @Composable() () -> Unit
 ) {
     val systemInDarkTheme = isSystemInDarkTheme()
-    val useDarkTheme = when (themeMode) {
-        ThemeMode.System -> systemInDarkTheme
-        ThemeMode.Light -> false
-        ThemeMode.Dark -> true
-    }
 
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    // "System" creates a color palette based on the user's wallpaper
+    val colorScheme = when (themeMode) {
+        ThemeMode.System -> {
+            if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val context = LocalContext.current
+                if (systemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            } else {
+                if (systemInDarkTheme) darkScheme else lightScheme
+            }
         }
-        useDarkTheme -> darkScheme
-        else -> lightScheme
+        ThemeMode.Light -> lightScheme
+        ThemeMode.Dark -> darkScheme
+        ThemeMode.HighContrastLight -> highContrastLightColorScheme
+        ThemeMode.HighContrastDark -> highContrastDarkColorScheme
     }
 
     MaterialTheme(

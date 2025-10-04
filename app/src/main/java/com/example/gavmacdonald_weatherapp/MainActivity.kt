@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -42,13 +43,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
-            var currentThemeMode by remember { mutableStateOf(ThemeMode.System) }
+            var currentThemeMode by rememberSaveable { mutableStateOf(ThemeMode.System) }
 
             GavMacDonaldWeatherAppTheme(themeMode = currentThemeMode) {
                 DisplayUI(
                     mainViewModel,
                     currentThemeMode = currentThemeMode,
-                    onThemeModeChange = { currentThemeMode = it }
+                    onThemeModeChange = { newMode -> currentThemeMode = newMode }
                 )
             }
         }
