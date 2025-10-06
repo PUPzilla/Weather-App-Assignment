@@ -1,31 +1,32 @@
 package com.example.gavmacdonald_weatherapp.models
 
 import com.example.gavmacdonald_weatherapp.R
+class Weather {
+    data class CurrentWeather(
+        var conditionId: Int,
+        val condition: String,
+        val temp: Double,
+        val precip: String,
+        var windDir: String,
+        var windSpeed: Double
+    )
 
-data class CurrentWeather(
-    var conditionId: Int,
-    val condition: String,
-    val temp: Double,
-    val precip: String,
-    var windDir: String,
-    var windSpeed: Double
-)
+    data class DailyForecast(
+        var conditionId: Int,
+        val date: String,
+        val condition: String,
+        val highTemp: Double,
+        val lowTemp: Double,
+        val precipType: String,
+        val precipAmount: Double,
+        val precipChance: Int,
+        val windDir: String,
+        val windSpeed: Double,
+        val humidity: Int
+    )
+}
 
-data class DailyForecast(
-    var conditionId: Int,
-    val date: String,
-    val condition: String,
-    val highTemp: Double,
-    val lowTemp: Double,
-    val precipType: String,
-    val precipAmount: Double,
-    val precipChance: Int,
-    val windDir: String,
-    val windSpeed: Double,
-    val humidity: Int
-)
-
-// Array of drawable resource IDs
+// Map of condition IDs to corresponding icons of drawable resources
 private val conditionIcons = mapOf(
     1 to R.drawable.rounded_sunny_24,           // 1 Sunny
     2 to R.drawable.rounded_cloud_24,           // 2 Cloudy
@@ -35,7 +36,6 @@ private val conditionIcons = mapOf(
     6 to R.drawable.rounded_thunderstorm_24,    // 6 Thunder
     7 to R.drawable.rounded_weather_snowy_24,   // 7 Snow
 )
-
 fun loadIcon(conditionId: Int): Int {
     return conditionIcons[conditionId] ?: R.drawable.rounded_error_24
 }

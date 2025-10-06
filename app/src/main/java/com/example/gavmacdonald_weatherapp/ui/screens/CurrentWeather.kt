@@ -27,12 +27,12 @@ import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 @Composable
 fun CurrentWeatherScreen(viewModel: MainViewModel) {
-    val txtPadding = Modifier.padding(16.dp)
+    val txtPadding = Modifier.padding(24.dp)
     val textStyle = TextStyle(
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
-    val current = viewModel.currentWeather
+    val current = viewModel.currentWeatherState.value ?: return
 
     CompositionLocalProvider(LocalTextStyle provides textStyle) {
         Box(

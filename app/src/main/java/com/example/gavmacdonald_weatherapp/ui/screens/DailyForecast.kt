@@ -29,17 +29,16 @@ fun DailyForecastScreen(viewModel: MainViewModel) {
     val txtPadding = Modifier.padding(8.dp)
     val textStyle = TextStyle(
         fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold)
+        fontWeight = FontWeight.SemiBold
+    )
+    val forecast = viewModel.dailyForecastsState
 
     CompositionLocalProvider(LocalTextStyle provides textStyle) {
         LazyColumn(modifier = Modifier.padding(8.dp)) {
-            items(viewModel.dailyForecasts) { forecast ->
+            items(forecast.value) { forecast ->
                 Card(
                     modifier = Modifier
-                        .padding(16.dp),
-                    colors = androidx.compose.material3.CardDefaults.cardColors(
-                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primaryContainer
-                    )
+                        .padding(16.dp)
                 ) {
                     Column(
                         Modifier
@@ -76,7 +75,7 @@ fun DailyForecastScreen(viewModel: MainViewModel) {
 }
 
 @SuppressLint("ViewModelConstructorInComposable")
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewDaily() {
     DailyForecastScreen(MainViewModel())
