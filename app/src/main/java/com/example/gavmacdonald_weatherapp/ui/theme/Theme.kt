@@ -283,6 +283,7 @@ fun GavMacDonaldWeatherAppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
+        typography = AppTypography,
         content = content
     )
 }

@@ -71,6 +71,12 @@ fun DisplayUI(
             TopAppBar(
                 title = { Text(locationName) },
                 actions = {
+                    IconButton(onClick = { viewModel.refreshWeather() }) {
+                        Icon(
+                            painterResource(R.drawable.round_refresh_24),
+                            contentDescription = "Refresh Data"
+                        )
+                    }
                     ThemeSelection(
                         currentThemeMode = currentThemeMode,
                         onThemeModeChange = onThemeModeChange

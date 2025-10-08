@@ -3,7 +3,7 @@ package com.example.gavmacdonald_weatherapp.models
 import com.example.gavmacdonald_weatherapp.R
 class Weather {
     data class CurrentWeather(
-        var conditionId: Int,
+        var conditionId: Int = 0,
         val condition: String,
         val temp: Double,
         val feelTemp: Int,
@@ -13,7 +13,7 @@ class Weather {
     )
 
     data class DailyForecast(
-        var conditionId: Int,
+        var conditionId: Int = 0,
         val date: String,
         val condition: String,
         val highTemp: Double,
@@ -37,6 +37,6 @@ private val conditionIcons = mapOf(
     6 to R.drawable.rounded_thunderstorm_24,    // 6 Thunder
     7 to R.drawable.rounded_weather_snowy_24,   // 7 Snow
 )
-fun loadIcon(conditionId: Int): Int {
-    return conditionIcons[conditionId] ?: R.drawable.rounded_error_24
+fun loadIcon(condition: Int ): Int {
+    return conditionIcons[condition] ?: R.drawable.rounded_error_24
 }

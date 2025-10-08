@@ -14,6 +14,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -32,7 +34,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
-    val current = viewModel.currentWeatherState.value ?: return
+    val current by viewModel.currentWeatherState.collectAsState()
 
     CompositionLocalProvider(LocalTextStyle provides textStyle) {
         Box(
@@ -41,6 +43,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                 .padding(8.dp),
             contentAlignment = Alignment.Center
         ) {
+            current?.let {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -54,7 +57,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     verticalAlignment = Alignment.Top
                 ) {
                     Icon(
-                        painterResource(id = loadIcon(current.conditionId)),
+                        painterResource(id = loadIcon(it.conditionId)),
                         contentDescription = null,
                         Modifier
                             .size(150.dp)
@@ -65,20 +68,29 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     modifier = Modifier
                         .padding(8.dp)
                 ) {
-                    Text("Conditions: ${current.condition}",
-                        modifier = txtPadding)
-                    Text("${current.temp} ℃",
-                        modifier = txtPadding, fontSize = 64.sp)
-                    Text("Feels Like: ${current.feelTemp} ℃",
-                        modifier = txtPadding)
-                    if (current.precip != "0mm") {
                         Text(
-                            "Precipitation: ${current.precip}",
+                            "Conditions: ${it.condition}",
+                            modifier = txtPadding
+                        )
+                        Text(
+                            "${it.temp} ℃",
+                            modifier = txtPadding, fontSize = 64.sp
+                        )
+                        Text(
+                            "Feels Like: ${it.feelTemp} ℃",
+                            modifier = txtPadding
+                        )
+                        if (it.precip != "0mm") {
+                            Text(
+                                "Precipitation: ${it.precip}",
+                                modifier = txtPadding
+                            )
+                        }
+                        Text(
+                            "Wind: ${it.windDir} ${it.windSpeed}km/h",
                             modifier = txtPadding
                         )
                     }
-                    Text("Wind: ${current.windDir} ${current.windSpeed}km/h",
-                        modifier = txtPadding)
                 }
             }
         }

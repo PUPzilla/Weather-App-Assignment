@@ -17,7 +17,12 @@ class MainViewModel : ViewModel() {
     private val dailyForecasts = MutableStateFlow<List<DailyForecast>>(emptyList())
     val dailyForecastsState = dailyForecasts.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+
     init {
+        loadWeather()
+    }
+    private fun loadWeather() {
         val current = CurrentWeather(
             conditionId = 1,
             condition = "Sunny",
@@ -30,52 +35,18 @@ class MainViewModel : ViewModel() {
         currentWeather.value = current
 
         val week: List<DailyForecast> = listOf(
-            DailyForecast(
-                date = "2025-09-19",
-                conditionId = 1,
-                condition = "Sunny",
-                highTemp = 25.0,
-                lowTemp = 15.0,
-                precipType = "Clear",
-                precipAmount = 0.0,
-                precipChance = 0,
-                windDir = "NW",
-                windSpeed = 10.0,
-                humidity = 50
-            ),
-            DailyForecast(
-                date = "2025-09-20",
-                conditionId = 2,
-                condition = "Cloudy",
-                highTemp = 20.0,
-                lowTemp = 14.0,
-                precipType = "Rain",
-                precipAmount = 5.0,
-                precipChance = 60,
-                windDir = "E",
-                windSpeed = 8.0,
-                humidity = 70
-            ),
-            DailyForecast(
-                date = "2025-09-21",
-                conditionId = 3,
-                condition = "Rain",
-                highTemp = 18.0,
-                lowTemp = 12.0,
-                precipType = "Rain",
-                precipAmount = 10.0,
-                precipChance = 80,
-                windDir = "S",
-                windSpeed = 15.0,
-                humidity = 85
-            )
+            DailyForecast(1, "2025-09-19", "Sunny", 25.0, 15.0, "Clear", 0.0, 0, "NW", 10.0, 50),
+            DailyForecast(2, "2025-09-20", "Cloudy", 20.0, 14.0, "Rain", 5.0, 60, "E", 8.0, 70),
+            DailyForecast(3, "2025-09-21", "Rain", 18.0, 12.0, "Rain", 10.0, 80, "S", 15.0, 85)
         )
         dailyForecasts.value = week
+    }
 
-        // Simulating API call delay
+    fun refreshWeather() {
+        // Simulate a delay before updating the data
         viewModelScope.launch {
-            delay(10000)
-
+            _isRefreshing.value = true
+            delay(2000)
             val updatedCurrent = CurrentWeather(
                 conditionId = 2,
                 condition = "Cloudy",
@@ -86,49 +57,13 @@ class MainViewModel : ViewModel() {
                 windSpeed = 11.0
             )
             currentWeather.value = updatedCurrent
-
             val updatedWeek: List<DailyForecast> = listOf(
-                DailyForecast(
-                    date = "2025-09-22",
-                    conditionId = 4,
-                    condition = "Stormy",
-                    highTemp = 22.0,
-                    lowTemp = 13.0,
-                    precipType = "Rain",
-                    precipAmount = 15.0,
-                    precipChance = 90,
-                    windDir = "W",
-                    windSpeed = 13.0,
-                    humidity = 90
-                ),
-                DailyForecast(
-                    date = "2025-09-23",
-                    conditionId = 5,
-                    condition = "Snowy",
-                    highTemp = 19.0,
-                    lowTemp = 11.0,
-                    precipType = "Snow",
-                    precipAmount = 20.0,
-                    precipChance = 95,
-                    windDir = "SW",
-                    windSpeed = 1.0,
-                    humidity = 100
-                ),
-                DailyForecast(
-                    date = "2025-09-24",
-                    conditionId = 6,
-                    condition = "Stormy",
-                    highTemp = 1.0,
-                    lowTemp = 0.0,
-                    precipType = "Rain",
-                    precipAmount = 25.0,
-                    precipChance = 100,
-                    windDir = "N",
-                    windSpeed = 0.0,
-                    humidity = 0
-                )
+                DailyForecast(4, "2025-09-22", "Heavy Rain", 22.0, 13.0, "Rain", 15.0, 90, "W", 13.0, 90),
+                DailyForecast(5, "2025-09-23", "Snowy", 19.0, 11.0, "Snow", 20.0, 95, "SW", 1.0, 100),
+                DailyForecast(6, "2025-09-24", "Stormy", 1.0, 0.0, "Rain", 25.0, 100, "N", 0.0, 0)
             )
             dailyForecasts.value = updatedWeek
+            _isRefreshing.value = false
         }
     }
 }
