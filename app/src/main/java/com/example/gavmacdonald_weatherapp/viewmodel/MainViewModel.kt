@@ -22,6 +22,7 @@ class MainViewModel : ViewModel() {
             conditionId = 1,
             condition = "Sunny",
             temp = 22.5,
+            feelTemp = 20,
             precip = "0mm",
             windDir = "NW",
             windSpeed = 12.0
@@ -35,7 +36,7 @@ class MainViewModel : ViewModel() {
                 condition = "Sunny",
                 highTemp = 25.0,
                 lowTemp = 15.0,
-                precipType = "None",
+                precipType = "Clear",
                 precipAmount = 0.0,
                 precipChance = 0,
                 windDir = "NW",
@@ -79,6 +80,7 @@ class MainViewModel : ViewModel() {
                 conditionId = 2,
                 condition = "Cloudy",
                 temp = 23.0,
+                feelTemp = 21,
                 precip = "1mm",
                 windDir = "NE",
                 windSpeed = 11.0

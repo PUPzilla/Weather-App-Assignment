@@ -61,15 +61,22 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     )
                 }
                 Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .padding(8.dp)
                 ) {
                     Text("Conditions: ${current.condition}",
                         modifier = txtPadding)
-                    Text("Temperature: ${current.temp}",
+                    Text("${current.temp} ℃",
+                        modifier = txtPadding, fontSize = 64.sp)
+                    Text("Feels Like: ${current.feelTemp} ℃",
                         modifier = txtPadding)
-                    Text("Precipitation: ${current.precip}",
-                        modifier = txtPadding)
+                    if (current.precip != "0mm") {
+                        Text(
+                            "Precipitation: ${current.precip}",
+                            modifier = txtPadding
+                        )
+                    }
                     Text("Wind: ${current.windDir} ${current.windSpeed}km/h",
                         modifier = txtPadding)
                 }

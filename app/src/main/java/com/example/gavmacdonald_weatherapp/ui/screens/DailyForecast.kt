@@ -47,7 +47,8 @@ fun DailyForecastScreen(viewModel: MainViewModel) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            painter = painterResource(loadIcon(forecast.conditionId)),
+                            painter = painterResource(
+                                loadIcon(forecast.conditionId)),
                             contentDescription = null,
                             Modifier.size(100.dp)
                         )

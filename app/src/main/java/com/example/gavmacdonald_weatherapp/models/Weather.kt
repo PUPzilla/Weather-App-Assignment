@@ -6,6 +6,7 @@ class Weather {
         var conditionId: Int,
         val condition: String,
         val temp: Double,
+        val feelTemp: Int,
         val precip: String,
         var windDir: String,
         var windSpeed: Double
