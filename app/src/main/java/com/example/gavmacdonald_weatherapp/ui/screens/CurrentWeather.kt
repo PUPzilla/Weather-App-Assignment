@@ -50,6 +50,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
+                //  Condition icon
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -63,6 +64,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                             .size(150.dp)
                     )
                 }
+                //  Current weather information
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
@@ -80,6 +82,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                             "Feels Like: ${it.feelTemp} ℃",
                             modifier = txtPadding
                         )
+                // If precipitation is not 0mm, display it.
                         if (it.precip != "0mm") {
                             Text(
                                 "Precipitation: ${it.precip}",

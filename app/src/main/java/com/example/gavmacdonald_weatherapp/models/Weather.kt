@@ -27,7 +27,8 @@ class Weather {
     )
 }
 
-// Map of condition IDs to corresponding icons of drawable resources
+// Map of condition IDs to corresponding icons of drawable resources.
+// May expand on condition IDs later to include the related string as well.
 private val conditionIcons = mapOf(
     1 to R.drawable.rounded_sunny_24,           // 1 Sunny
     2 to R.drawable.rounded_cloud_24,           // 2 Cloudy
@@ -37,6 +38,8 @@ private val conditionIcons = mapOf(
     6 to R.drawable.rounded_thunderstorm_24,    // 6 Thunder
     7 to R.drawable.rounded_weather_snowy_24,   // 7 Snow
 )
+// Function to load the correct icon based on the condition ID.
+// If the condition ID is not in the map, return an error icon.
 fun loadIcon(condition: Int ): Int {
     return conditionIcons[condition] ?: R.drawable.rounded_error_24
 }

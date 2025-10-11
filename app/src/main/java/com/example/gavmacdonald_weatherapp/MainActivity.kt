@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.gavmacdonald_weatherapp.ui.screens.CurrentWeatherScreen
 import com.example.gavmacdonald_weatherapp.ui.screens.DailyForecastScreen
@@ -63,6 +64,8 @@ fun DisplayUI(
     currentThemeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit
 ) {
+    // Placeholder location.
+    // Will replace this later with a call to fetch the user's real location.
     val locationName = "Halifax, Nova Scotia"
     val navController = rememberNavController()
 
@@ -71,12 +74,14 @@ fun DisplayUI(
             TopAppBar(
                 title = { Text(locationName) },
                 actions = {
+                    //  Refresh button
                     IconButton(onClick = { viewModel.refreshWeather() }) {
                         Icon(
                             painterResource(R.drawable.round_refresh_24),
                             contentDescription = "Refresh Data"
                         )
                     }
+                    //  Theme selection dropdown
                     ThemeSelection(
                         currentThemeMode = currentThemeMode,
                         onThemeModeChange = onThemeModeChange
@@ -84,24 +89,47 @@ fun DisplayUI(
                 }
             )
         },
+        //  Screen navigation
         bottomBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
             NavigationBar {
+                //  Current weather screen
                 NavigationBarItem(
                     icon = {
                         Icon(painterResource(R.drawable.rounded_home_24),
-                            contentDescription = "Current Weather Icon")},
+                            contentDescription = "Current Weather Icon"
+                        )
+                    },
                     label = { Text("Current") },
-                    selected = (navController.currentDestination?.route == "current"),
-                    onClick = { navController.navigate("current") }
+                    selected = currentRoute == "current",
+                    onClick = {
+                        if (currentRoute != "current") {
+                            navController.navigate("current") {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    }
                 )
+                //  Daily forecast screen
                 NavigationBarItem(
                     icon = {
                         Icon(painterResource(R.drawable.rounded_calendar_today_24),
-                            contentDescription = "Daily Forecast Icon")
+                            contentDescription = "Daily Forecast Icon"
+                        )
                     },
                     label = { Text("Forecast") },
-                    selected = (navController.currentDestination?.route == "forecast"),
-                    onClick = { navController.navigate("forecast") }
+                    selected = currentRoute == "forecast",
+                    onClick = {
+                        navController.navigate("forecast") {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }
@@ -117,6 +145,7 @@ fun DisplayUI(
     }
 }
 
+//  Theme selection dropdown menu
 @Composable
 fun ThemeSelection(
     currentThemeMode: ThemeMode,
@@ -136,12 +165,14 @@ fun ThemeSelection(
         onDismissRequest = { expanded = false }
     ) {
         ThemeMode.entries.forEach { mode ->
+            //  List themes to choose from
             DropdownMenuItem(
                 text = { Text(mode.name) },
                 onClick = {
                     onThemeModeChange(mode)
                     expanded = false
                 },
+            //  Checkmark next to selected theme
                 leadingIcon = {
                     if (mode == currentThemeMode) {
                         Icon(Icons.Default.Check, contentDescription = "Selected")

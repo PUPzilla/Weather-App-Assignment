@@ -55,6 +55,7 @@ fun DailyForecastScreen(viewModel: MainViewModel) {
                             Modifier.size(100.dp)
                         )
                     }
+                    //  Daily forecast information
                     Column(
                         Modifier.padding(16.dp)
                     ) {

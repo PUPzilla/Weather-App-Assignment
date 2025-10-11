@@ -1,16 +1,12 @@
 package com.example.gavmacdonald_weatherapp.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -87,7 +83,8 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHigh = surfaceContainerHighDark,
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
-
+//  Unused high contrast themes.
+//  Might add back in later along with a check for the device's contrast settings.
 private val mediumContrastLightColorScheme = lightColorScheme(
     primary = primaryLightMediumContrast,
     onPrimary = onPrimaryLightMediumContrast,
@@ -252,35 +249,34 @@ enum class ThemeMode {
     System,
     Light,
     Dark,
-    HighContrastLight,
-    HighContrastDark
+
+//  Unused high contrast themes.
+//  Might add back in later along with ability to check for device contrast settings.
+
+//  HighContrastLight,
+//  HighContrastDark
 }
 
 @Composable
 fun GavMacDonaldWeatherAppTheme(
     themeMode: ThemeMode = ThemeMode.System,
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    //  Dynamic color is available on Android 12+
+    //  dynamicColor: Boolean = true,
     content: @Composable() () -> Unit
 ) {
+    //  Check device theme
     val systemInDarkTheme = isSystemInDarkTheme()
 
-    // "System" creates a color palette based on the user's wallpaper
+    // 'System' is the default theme, it chooses light or dark based on the device's settings.
     val colorScheme = when (themeMode) {
         ThemeMode.System -> {
-            if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val context = LocalContext.current
-                if (systemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            } else {
-                if (systemInDarkTheme) darkScheme else lightScheme
-            }
+            if (systemInDarkTheme) darkScheme else lightScheme
         }
         ThemeMode.Light -> lightScheme
         ThemeMode.Dark -> darkScheme
-        ThemeMode.HighContrastLight -> highContrastLightColorScheme
-        ThemeMode.HighContrastDark -> highContrastDarkColorScheme
+//        ThemeMode.HighContrastLight -> highContrastLightColorScheme
+//        ThemeMode.HighContrastDark -> highContrastDarkColorScheme
     }
-
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
