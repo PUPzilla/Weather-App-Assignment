@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,13 +17,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.gavmacdonald_weatherapp.models.loadIcon
+import coil.compose.AsyncImage
 import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 
 @Composable
@@ -34,7 +33,11 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
-    val current by viewModel.currentWeatherState.collectAsState()
+    val current by viewModel.currentWeather.collectAsState()
+
+    val fullIconUrl = current?.condition?.icon?.let { icon ->
+        if (icon.startsWith("//")) "https:$icon" else icon
+    } ?: ""
 
     CompositionLocalProvider(LocalTextStyle provides textStyle) {
         Box(
@@ -44,60 +47,50 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
             contentAlignment = Alignment.Center
         ) {
             current?.let {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                //  Condition icon
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Icon(
-                        painterResource(id = loadIcon(it.conditionId)),
-                        contentDescription = null,
-                        Modifier
-                            .size(150.dp)
-                    )
-                }
-                //  Current weather information
                 Column(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(8.dp)
+                    verticalArrangement = Arrangement.Top
                 ) {
-                        Text(
-                            "Conditions: ${it.condition}",
-                            modifier = txtPadding
+                    //  Condition icon
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        WeatherIcon(
+                            iconUrl = fullIconUrl,
+                            modifier = Modifier.size(64.dp)
                         )
-                        Text(
-                            "${it.temp} ℃",
-                            modifier = txtPadding, fontSize = 64.sp
-                        )
-                        Text(
-                            "Feels Like: ${it.feelTemp} ℃",
-                            modifier = txtPadding
-                        )
-                // If precipitation is not 0mm, display it.
-                        if (it.precip != "0mm") {
-                            Text(
-                                "Precipitation: ${it.precip}",
-                                modifier = txtPadding
-                            )
+                    }
+
+                    //  Weather info
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(8.dp)
+                    ) {
+                        Text("Conditions: ${it.condition.text}", modifier = txtPadding)
+                        Text("${it.temp_c} ℃", modifier = txtPadding, fontSize = 64.sp)
+                        Text("Feels Like: ${it.feelslike_c} ℃", modifier = txtPadding)
+                        if (it.precip_mm != 0.0) {
+                            Text("Precipitation: ${it.precip_mm} mm", modifier = txtPadding)
                         }
-                        Text(
-                            "Wind: ${it.windDir} ${it.windSpeed}km/h",
-                            modifier = txtPadding
-                        )
+                        Text("Wind: ${it.wind_dir} ${it.wind_kph} km/h", modifier = txtPadding)
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun WeatherIcon(iconUrl: String, modifier: Modifier = Modifier) {
+    AsyncImage(
+        model = iconUrl,
+        contentDescription = null,
+        modifier = modifier,
+        contentScale = ContentScale.Fit
+    )
 }
 
 @SuppressLint("ViewModelConstructorInComposable")

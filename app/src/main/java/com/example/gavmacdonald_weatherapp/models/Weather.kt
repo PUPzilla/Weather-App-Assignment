@@ -1,45 +1,55 @@
 package com.example.gavmacdonald_weatherapp.models
 
-import com.example.gavmacdonald_weatherapp.R
-class Weather {
-    data class CurrentWeather(
-        var conditionId: Int = 0,
-        val condition: String,
-        val temp: Double,
-        val feelTemp: Int,
-        val precip: String,
-        var windDir: String,
-        var windSpeed: Double
-    )
-
-    data class DailyForecast(
-        var conditionId: Int = 0,
-        val date: String,
-        val condition: String,
-        val highTemp: Double,
-        val lowTemp: Double,
-        val precipType: String,
-        val precipAmount: Double,
-        val precipChance: Int,
-        val windDir: String,
-        val windSpeed: Double,
-        val humidity: Int
-    )
-}
-
-// Map of condition IDs to corresponding icons of drawable resources.
-// May expand on condition IDs later to include the related string as well.
-private val conditionIcons = mapOf(
-    1 to R.drawable.rounded_sunny_24,           // 1 Sunny
-    2 to R.drawable.rounded_cloud_24,           // 2 Cloudy
-    3 to R.drawable.rounded_rainy_24,           // 3 Rain
-    4 to R.drawable.rounded_rainy_heavy_24,     // 4 Heavy Rain
-    5 to R.drawable.rounded_foggy_24,           // 5 Fog
-    6 to R.drawable.rounded_thunderstorm_24,    // 6 Thunder
-    7 to R.drawable.rounded_weather_snowy_24,   // 7 Snow
+data class Location(
+    val name: String,
+    val region: String,
+    val country: String,
+    val lat: Double,
+    val lon: Double,
+    val tz_id: String,
+    val localtime: String
 )
-// Function to load the correct icon based on the condition ID.
-// If the condition ID is not in the map, return an error icon.
-fun loadIcon(condition: Int ): Int {
-    return conditionIcons[condition] ?: R.drawable.rounded_error_24
-}
+
+data class Condition(
+    val text: String,
+    val icon: String
+)
+
+data class CurrentWeather(
+    val last_updated: String,
+    val temp_c: Double,
+    val is_day: Int,
+    val condition: Condition,
+    val wind_kph: Double,
+    val wind_dir: String,
+    val precip_mm: Double,
+    val humidity: Int,
+    val feelslike_c: Double
+)
+
+data class Forecast(
+    val forecastday: List<ForecastDay>
+)
+
+data class ForecastDay(
+    val date: String,
+    val day: Day
+)
+
+data class Day(
+    val maxtemp_c: Double,
+    val mintemp_c: Double,
+    val condition: Condition,
+    val daily_chance_of_rain: Int,
+    val daily_chance_of_snow: Int
+)
+
+data class Hour(
+    val time: String,
+    val temp_c: Double,
+    val condition: Condition,
+    val wind_kph: Double,
+    val wind_dir: String,
+    val precip_mm: Double,
+    val humidity: Int
+)

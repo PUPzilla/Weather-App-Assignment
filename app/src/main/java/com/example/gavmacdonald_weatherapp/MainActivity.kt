@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,8 +67,12 @@ fun DisplayUI(
 ) {
     // Placeholder location.
     // Will replace this later with a call to fetch the user's real location.
-    val locationName = "Halifax, Nova Scotia"
+    val locationName = "Halifax"
     val navController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshWeather(locationName)
+    }
 
     Scaffold(
         topBar = {
@@ -75,7 +80,7 @@ fun DisplayUI(
                 title = { Text(locationName) },
                 actions = {
                     //  Refresh button
-                    IconButton(onClick = { viewModel.refreshWeather() }) {
+                    IconButton(onClick = { viewModel.refreshWeather(locationName) }) {
                         Icon(
                             painterResource(R.drawable.round_refresh_24),
                             contentDescription = "Refresh Data"
