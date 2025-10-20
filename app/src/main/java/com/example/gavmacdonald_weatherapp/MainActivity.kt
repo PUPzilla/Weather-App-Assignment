@@ -1,9 +1,12 @@
 package com.example.gavmacdonald_weatherapp
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -28,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,9 +42,25 @@ import com.example.gavmacdonald_weatherapp.ui.screens.DailyForecastScreen
 import com.example.gavmacdonald_weatherapp.ui.theme.GavMacDonaldWeatherAppTheme
 import com.example.gavmacdonald_weatherapp.ui.theme.ThemeMode
 import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
+import com.google.android.gms.location.LocationServices
 
 class MainActivity : ComponentActivity() {
     private lateinit var mainViewModel: MainViewModel
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            when {
+                permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+                    fetchLocation()
+                }
+                permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+                    fetchLocation()
+                }
+                else -> {
+                    // Handle permission denied
+                    mainViewModel.refreshWeather("Halifax")
+                }
+            }
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
@@ -56,8 +76,34 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
+    private fun locationPermissionRequest() {
+        requestPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+    @SuppressLint("MissingPermission")
+    private fun fetchLocation(){
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        val locationString = "${location.latitude},${location.longitude}"
+                        mainViewModel.refreshWeather(locationString)
+                    } else {
+                        mainViewModel.refreshWeather("Halifax")
+                    }
+                }
+        }
+    }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplayUI(
