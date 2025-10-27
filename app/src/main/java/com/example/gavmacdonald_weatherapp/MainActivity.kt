@@ -1,7 +1,10 @@
 package com.example.gavmacdonald_weatherapp
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -26,8 +29,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,6 +43,12 @@ import com.example.gavmacdonald_weatherapp.ui.screens.DailyForecastScreen
 import com.example.gavmacdonald_weatherapp.ui.theme.GavMacDonaldWeatherAppTheme
 import com.example.gavmacdonald_weatherapp.ui.theme.ThemeMode
 import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 
 class MainActivity : ComponentActivity() {
     private lateinit var mainViewModel: MainViewModel
@@ -46,7 +57,6 @@ class MainActivity : ComponentActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContent {
             var currentThemeMode by rememberSaveable { mutableStateOf(ThemeMode.System) }
-
             GavMacDonaldWeatherAppTheme(themeMode = currentThemeMode) {
                 DisplayUI(
                     mainViewModel,
@@ -54,6 +64,7 @@ class MainActivity : ComponentActivity() {
                     onThemeModeChange = { newMode -> currentThemeMode = newMode }
                 )
             }
+            GetLocation()
         }
     }
 }
@@ -146,6 +157,44 @@ fun DisplayUI(
         ) {
             composable("current") { CurrentWeatherScreen(viewModel) }
             composable("forecast") { DailyForecastScreen(viewModel) }
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun GetLocation() {
+    val permissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+
+    if(permissionState.status.isGranted) {
+        Log.i("TESTING", "Location permission granted...\nNuclear strike inbound.")
+
+        val currentContext = LocalContext.current
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(currentContext)
+
+        if(ContextCompat.checkSelfPermission(
+                currentContext,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            val cancellationTokenSource = CancellationTokenSource()
+
+            Log.i("TESTING", "Requesting location...")
+
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.token)
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        val lat = location.latitude.toString()
+                        val long = location.longitude.toString()
+
+                        Log.i("TESTING", "Location: ${location.latitude}, ${location.longitude}")
+
+                        val coordinates = "$lat $long"
+                    }
+                }
+        }
+    }
+    else {
+        LaunchedEffect(permissionState) {
+            permissionState.launchPermissionRequest()
         }
     }
 }
