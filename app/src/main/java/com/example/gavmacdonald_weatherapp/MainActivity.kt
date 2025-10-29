@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     onThemeModeChange = { newMode -> currentThemeMode = newMode }
                 )
             }
-            GetLocation()
+            GetLocation(viewModel = mainViewModel)
         }
     }
 }
@@ -76,22 +77,34 @@ fun DisplayUI(
     currentThemeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit
 ) {
-    // Placeholder location.
-    // Will replace this later with a call to fetch the user's real location.
-    val locationName = "Halifax"
+    val location = viewModel.location.collectAsState()
     val navController = rememberNavController()
 
-    LaunchedEffect(Unit) {
-        viewModel.refreshWeather(locationName)
+    LaunchedEffect(location.value) {
+        val loc = location.value
+        if ((loc?.lat != null) && (loc.lon != null)){
+            val coordinates = "${loc.lat},${loc.lon}"
+            viewModel.refreshWeather(coordinates)
+        }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(locationName) },
+                title = {
+                    val name = location.value?.name ?: "Locating..."
+                    val region = location.value?.region ?: "Locating..."
+                    val country = location.value?.country ?: "Locating..."
+                    Text("$name${if (region.isNotEmpty()) ", $region" else ""}")
+                },
                 actions = {
-                    //  Refresh button
-                    IconButton(onClick = { viewModel.refreshWeather(locationName) }) {
+                    IconButton(onClick = {
+                        val loc = location.value
+                        if (loc?.lat != null && loc.lon != null) {
+                            val coordinates = "${loc.lat},${loc.lon}"
+                            viewModel.refreshWeather(coordinates)
+                        }
+                    }) {
                         Icon(
                             painterResource(R.drawable.round_refresh_24),
                             contentDescription = "Refresh Data"
@@ -163,37 +176,39 @@ fun DisplayUI(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun GetLocation() {
+fun GetLocation(viewModel: MainViewModel) {
     val permissionState = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val context = LocalContext.current
 
-    if(permissionState.status.isGranted) {
-        Log.i("TESTING", "Location permission granted...\nNuclear strike inbound.")
+    LaunchedEffect(permissionState.status.isGranted) {
+        if (permissionState.status.isGranted) {
+            Log.i("TESTING", "Location permission granted...\nNuclear strike inbound.")
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
-        val currentContext = LocalContext.current
-        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(currentContext)
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val cancellationTokenSource = CancellationTokenSource()
+                Log.i("TESTING", "Requesting location...")
 
-        if(ContextCompat.checkSelfPermission(
-                currentContext,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            val cancellationTokenSource = CancellationTokenSource()
-
-            Log.i("TESTING", "Requesting location...")
-
-            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationTokenSource.token)
-                .addOnSuccessListener { location ->
+                fusedLocationClient.getCurrentLocation(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    cancellationTokenSource.token
+                ).addOnSuccessListener { location ->
                     if (location != null) {
-                        val lat = location.latitude.toString()
-                        val long = location.longitude.toString()
+                        val lat = location.latitude
+                        val long = location.longitude
 
-                        Log.i("TESTING", "Location: ${location.latitude}, ${location.longitude}")
+                        Log.i("TESTING","Location: ${location.latitude}, ${location.longitude}")
 
-                        val coordinates = "$lat $long"
+                        viewModel.refreshWeather("$lat, $long")
                     }
                 }
-        }
-    }
-    else {
-        LaunchedEffect(permissionState) {
+            }
+        } else {
+            Log.i("TESTING", "Requesting location permission...")
             permissionState.launchPermissionRequest()
         }
     }
