@@ -7,10 +7,13 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -77,6 +81,7 @@ fun DisplayUI(
     currentThemeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit
 ) {
+    val isLoading by viewModel.isLoading.collectAsState()
     val location = viewModel.location.collectAsState()
     val navController = rememberNavController()
 
@@ -94,7 +99,6 @@ fun DisplayUI(
                 title = {
                     val name = location.value?.name ?: "Locating..."
                     val region = location.value?.region ?: "Locating..."
-                    val country = location.value?.country ?: "Locating..."
                     Text("$name${if (region.isNotEmpty()) ", $region" else ""}")
                 },
                 actions = {
@@ -170,6 +174,15 @@ fun DisplayUI(
         ) {
             composable("current") { CurrentWeatherScreen(viewModel) }
             composable("forecast") { DailyForecastScreen(viewModel) }
+        }
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

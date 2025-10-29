@@ -20,6 +20,7 @@ class MainViewModel : ViewModel() {
     private val _location = MutableStateFlow<Location?>(null)
     val location = _location.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
     private val _errorMessage = MutableStateFlow<String?>(null)
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl("https://api.weatherapi.com/v1/")
