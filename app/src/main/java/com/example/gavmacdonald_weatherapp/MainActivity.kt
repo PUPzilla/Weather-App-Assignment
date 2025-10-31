@@ -86,9 +86,8 @@ fun DisplayUI(
     val navController = rememberNavController()
 
     LaunchedEffect(location.value) {
-        val loc = location.value
-        if ((loc?.lat != null) && (loc.lon != null)){
-            val coordinates = "${loc.lat},${loc.lon}"
+        if (location.value != null){
+            val coordinates = "${location.value?.lat},${location.value?.lon}"
             viewModel.refreshWeather(coordinates)
         }
     }
@@ -97,23 +96,11 @@ fun DisplayUI(
         topBar = {
             TopAppBar(
                 title = {
-                    val name = location.value?.name ?: "Locating..."
-                    val region = location.value?.region ?: "Locating..."
+                    val name = location.value?.name ?: "Fetching data from API..."
+                    val region = location.value?.region ?: ""
                     Text("$name${if (region.isNotEmpty()) ", $region" else ""}")
                 },
                 actions = {
-                    IconButton(onClick = {
-                        val loc = location.value
-                        if (loc?.lat != null && loc.lon != null) {
-                            val coordinates = "${loc.lat},${loc.lon}"
-                            viewModel.refreshWeather(coordinates)
-                        }
-                    }) {
-                        Icon(
-                            painterResource(R.drawable.round_refresh_24),
-                            contentDescription = "Refresh Data"
-                        )
-                    }
                     //  Theme selection dropdown
                     ThemeSelection(
                         currentThemeMode = currentThemeMode,

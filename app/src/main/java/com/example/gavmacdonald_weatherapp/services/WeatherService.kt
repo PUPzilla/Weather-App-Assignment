@@ -5,8 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherService {
-
-//    https://api.weatherapi.com/v1/current.json?key=74ec7199c6de433d88d182829251510&q=Halifax&aqi=no
+//    https://api.weatherapi.com/v1/forecast.json?key=74ec7199c6de433d88d182829251510&q=Halifax&aqi=no
     @GET("forecast.json")
     suspend fun getForecast(
         @Query("key") key: String = "74ec7199c6de433d88d182829251510",

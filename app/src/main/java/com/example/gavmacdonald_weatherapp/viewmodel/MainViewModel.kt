@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gavmacdonald_weatherapp.models.CurrentWeather
 import com.example.gavmacdonald_weatherapp.models.ForecastDay
+import com.example.gavmacdonald_weatherapp.models.Hour
 import com.example.gavmacdonald_weatherapp.models.Location
 import com.example.gavmacdonald_weatherapp.services.WeatherService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,8 @@ class MainViewModel : ViewModel() {
     val dailyForecasts = _dailyForecasts.asStateFlow()
     private val _location = MutableStateFlow<Location?>(null)
     val location = _location.asStateFlow()
+    private val _hourlyForecast = MutableStateFlow<List<Hour>>(emptyList())
+    val hourlyForecast = _hourlyForecast.asStateFlow()
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
     private val _errorMessage = MutableStateFlow<String?>(null)
@@ -40,8 +43,11 @@ class MainViewModel : ViewModel() {
                 )
 
                 _currentWeather.value = forecastResponse.current
+                _hourlyForecast.value =
+                    forecastResponse.forecast.forecastday.firstOrNull()?.hour ?: emptyList()
                 _dailyForecasts.value = forecastResponse.forecast.forecastday
                 _location.value = forecastResponse.location
+
             } catch (e: Exception) {
                 _errorMessage.value = e.localizedMessage ?: "Failed to fetch weather data"
             } finally {

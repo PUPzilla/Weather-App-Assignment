@@ -2,17 +2,18 @@ package com.example.gavmacdonald_weatherapp.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.LocalTextStyle
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun CurrentWeatherScreen(viewModel: MainViewModel) {
@@ -33,49 +36,81 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold
     )
+
     val current by viewModel.currentWeather.collectAsState()
+    val hourly by viewModel.hourlyForecast.collectAsState()
 
     val fullIconUrl = current?.condition?.icon?.let { icon ->
         if (icon.startsWith("//")) "https:$icon" else icon
     } ?: ""
 
-    CompositionLocalProvider(LocalTextStyle provides textStyle) {
-        Box(
+    if (current != null) {
+        Card(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
-            contentAlignment = Alignment.Center
+            elevation = CardDefaults.cardElevation(8.dp)
         ) {
-            current?.let {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    //  Condition icon
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        WeatherIcon(
-                            iconUrl = fullIconUrl,
-                            modifier = Modifier.size(64.dp)
-                        )
-                    }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(modifier = Modifier.size(16.dp))
+                //  Condition icon
+                AsyncImage(
+                    model = fullIconUrl,
+                    contentDescription = "Weather Icon",
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(128.dp)
+                )
 
-                    //  Weather info
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp)
+                //  Weather info
+                Text(
+                    text = current!!.condition.text,
+                    modifier = txtPadding,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 32.sp
+                )
+                Text(
+                    text = "${current!!.temp_c} ℃",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = "(Feels Like: ${current!!.feelslike_c} ℃)",
+                    modifier = txtPadding,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp
+                )
+                if (current?.precip_mm != 0.0) {
+                    Text(
+                        text = "Precipitation: ${current!!.precip_mm} mm",
+                        modifier = txtPadding
+                    )
+                }
+                Text(
+                    text = "Wind: ${current!!.wind_dir} ${current?.wind_kph} km/h",
+                    modifier = txtPadding,
+                    style = textStyle
+                )
+
+                Spacer(modifier = Modifier.size(36.dp))
+                if (hourly.isNotEmpty()) {
+                    Text(
+                        text = "Hourly Weather",
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = txtPadding
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        Text("Conditions: ${it.condition.text}", modifier = txtPadding)
-                        Text("${it.temp_c} ℃", modifier = txtPadding, fontSize = 64.sp)
-                        Text("Feels Like: ${it.feelslike_c} ℃", modifier = txtPadding)
-                        if (it.precip_mm != 0.0) {
-                            Text("Precipitation: ${it.precip_mm} mm", modifier = txtPadding)
+                        items(hourly.take(12)) { hour ->
+                            HourlyWeatherCard(hour.time, hour.temp_c, hour.condition.icon)
                         }
-                        Text("Wind: ${it.wind_dir} ${it.wind_kph} km/h", modifier = txtPadding)
                     }
                 }
             }
@@ -84,17 +119,49 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-fun WeatherIcon(iconUrl: String, modifier: Modifier = Modifier) {
-    AsyncImage(
-        model = iconUrl,
-        contentDescription = null,
-        modifier = modifier,
-        contentScale = ContentScale.Fit
-    )
+fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String) {
+    val displayedTime = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("ha", Locale.getDefault())
+        val date = inputFormat.parse(time)
+        outputFormat.format(date ?: time)
+    } catch (_: Exception) {
+        time
+    }
+
+    val fullIconUrl = if (iconUrl.startsWith("//")) "https:$iconUrl" else iconUrl
+
+    Card(
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .size(width = 80.dp, height = 140.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            AsyncImage(
+                model = fullIconUrl,
+                contentDescription = "Hourly Weather Icon",
+                modifier = Modifier.size(40.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(displayedTime, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            Spacer(modifier = Modifier.size(4.dp))
+            Text("$temp ℃", fontSize = 16.sp)
+        }
+    }
 }
 
 @SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
+@Preview(showBackground = false)
 @Composable
 fun PreviewUI(){
     CurrentWeatherScreen(MainViewModel())

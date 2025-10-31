@@ -33,7 +33,8 @@ data class Forecast(
 
 data class ForecastDay(
     val date: String,
-    val day: Day
+    val day: Day,
+    val hour: List<Hour>
 )
 
 data class Day(
@@ -50,6 +51,5 @@ data class Hour(
     val condition: Condition,
     val wind_kph: Double,
     val wind_dir: String,
-    val precip_mm: Double,
-    val humidity: Int
+    val precip_mm: Double
 )
