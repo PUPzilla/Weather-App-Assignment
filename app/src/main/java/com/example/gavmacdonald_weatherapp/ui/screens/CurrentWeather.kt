@@ -1,6 +1,6 @@
 package com.example.gavmacdonald_weatherapp.ui.screens
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,12 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gavmacdonald_weatherapp.viewmodel.MainViewModel
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 @Composable
@@ -44,6 +47,8 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         if (icon.startsWith("//")) "https:$icon" else icon
     } ?: ""
 
+    val currentHour = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
+
     if (current != null) {
         Card(
             modifier = Modifier
@@ -54,10 +59,11 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
+                    .padding(12.dp)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.size(16.dp))
+                Text(currentHour, style = textStyle)
                 //  Condition icon
                 AsyncImage(
                     model = fullIconUrl,
@@ -94,8 +100,6 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     modifier = txtPadding,
                     style = textStyle
                 )
-
-                Spacer(modifier = Modifier.size(36.dp))
                 if (hourly.isNotEmpty()) {
                     Text(
                         text = "Hourly Weather",
@@ -106,12 +110,26 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
-                        items(hourly.take(12)) { hour ->
-                            HourlyWeatherCard(hour.time, hour.temp_c, hour.condition.icon)
+                        items(hourly.take(24)) { hour ->
+                            val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                            val outputFormat = SimpleDateFormat("ha", Locale.getDefault())
+                            val parsedTime = inputFormat.parse(hour.time)
+                            val formattedTime = outputFormat.format(parsedTime ?: Date())
+
+                            val isCurrent = formattedTime == currentHour
+
+                            HourlyWeatherCard(
+                                time = hour.time,
+                                temp = hour.temp_c,
+                                iconUrl = hour.condition.icon,
+                                isCurrentHour = isCurrent
+                            )
                         }
                     }
+                    Text("Last update: ${current!!.last_updated}", fontSize = 12.sp)
                 }
             }
         }
@@ -119,7 +137,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
 }
 
 @Composable
-fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String) {
+fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String, isCurrentHour: Boolean) {
     val displayedTime = try {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
         val outputFormat = SimpleDateFormat("ha", Locale.getDefault())
@@ -131,13 +149,25 @@ fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String) {
 
     val fullIconUrl = if (iconUrl.startsWith("//")) "https:$iconUrl" else iconUrl
 
+    // Color to highlight the current hour
+    val highlightColor = if (isCurrentHour)
+        MaterialTheme.colorScheme.primaryContainer
+    else
+        MaterialTheme.colorScheme.surfaceVariant
+
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp)
             .size(width = 80.dp, height = 140.dp),
         elevation = CardDefaults.cardElevation(4.dp),
+
+        //  Highlight current hour
+        border = if (isCurrentHour)
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        else
+            null,
         colors = CardDefaults.cardColors(
-            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.surfaceVariant
+            containerColor = highlightColor
         )
     ) {
         Column(
@@ -147,22 +177,15 @@ fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(displayedTime, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             AsyncImage(
                 model = fullIconUrl,
                 contentDescription = "Hourly Weather Icon",
                 modifier = Modifier.size(40.dp),
                 contentScale = ContentScale.Fit
             )
-            Text(displayedTime, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             Spacer(modifier = Modifier.size(4.dp))
             Text("$temp ℃", fontSize = 16.sp)
         }
     }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = false)
-@Composable
-fun PreviewUI(){
-    CurrentWeatherScreen(MainViewModel())
 }

@@ -43,8 +43,7 @@ class MainViewModel : ViewModel() {
                 )
 
                 _currentWeather.value = forecastResponse.current
-                _hourlyForecast.value =
-                    forecastResponse.forecast.forecastday.firstOrNull()?.hour ?: emptyList()
+                _hourlyForecast.value = forecastResponse.forecast.forecastday.firstOrNull()?.hour ?: emptyList()
                 _dailyForecasts.value = forecastResponse.forecast.forecastday
                 _location.value = forecastResponse.location
 

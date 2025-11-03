@@ -1,7 +1,6 @@
 package com.example.gavmacdonald_weatherapp
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
@@ -249,18 +247,5 @@ fun ThemeSelection(
                 }
             )
         }
-    }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun PreviewUI(){
-    GavMacDonaldWeatherAppTheme(themeMode = ThemeMode.Dark) {
-        DisplayUI(
-            viewModel = MainViewModel(),
-            currentThemeMode = ThemeMode.Light,
-            onThemeModeChange = { }
-        )
     }
 }
