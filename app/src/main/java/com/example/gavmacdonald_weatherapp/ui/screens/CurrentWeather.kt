@@ -47,7 +47,9 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
         if (icon.startsWith("//")) "https:$icon" else icon
     } ?: ""
 
-    val currentHour = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
+    // Current hour, no minutes. For highlighting function
+    val currentHour = SimpleDateFormat("h a", Locale.getDefault()).format(Date())
+    val displayedTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
 
     if (current != null) {
         Card(
@@ -63,7 +65,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(currentHour, style = textStyle)
+                Text(displayedTime, style = textStyle)
                 //  Condition icon
                 AsyncImage(
                     model = fullIconUrl,
@@ -115,7 +117,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
                     ) {
                         items(hourly.take(24)) { hour ->
                             val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-                            val outputFormat = SimpleDateFormat("ha", Locale.getDefault())
+                            val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
                             val parsedTime = inputFormat.parse(hour.time)
                             val formattedTime = outputFormat.format(parsedTime ?: Date())
 
@@ -140,7 +142,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
 fun HourlyWeatherCard(time: String, temp: Double, iconUrl: String, isCurrentHour: Boolean) {
     val displayedTime = try {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("ha", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
         val date = inputFormat.parse(time)
         outputFormat.format(date ?: time)
     } catch (_: Exception) {
