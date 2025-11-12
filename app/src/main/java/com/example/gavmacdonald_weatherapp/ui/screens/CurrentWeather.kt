@@ -42,6 +42,7 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
 
     val current by viewModel.currentWeather.collectAsState()
     val hourly by viewModel.hourlyForecast.collectAsState()
+    val location by viewModel.location.collectAsState()
 
     val fullIconUrl = current?.condition?.icon?.let { icon ->
         if (icon.startsWith("//")) "https:$icon" else icon
@@ -49,7 +50,14 @@ fun CurrentWeatherScreen(viewModel: MainViewModel) {
 
     // Current hour, no minutes. For highlighting function
     val currentHour = SimpleDateFormat("h a", Locale.getDefault()).format(Date())
-    val displayedTime = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
+    val displayedTime = try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("h a", Locale.getDefault())
+        val date = inputFormat.parse(location?.localtime ?: "")
+        outputFormat.format(date ?: Date())
+    } catch (_: Exception) {
+        "N/A"
+    }
 
     if (current != null) {
         Card(
